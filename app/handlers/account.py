@@ -49,7 +49,8 @@ class InGame(StatesGroup):
 async def cmd_loggedin_amihere(message: Message, state: FSMContext):
     data = await state.get_data() 
     print(data['char_acc_id'])
-    await message.answer('Помощь')
+    await message.answer('Помощи нет, Бог не поможет.')
+    await message.answer('Пока что пишите: https://t.me/DarJigoky')
     print('\ncmd_loggedin_amihere')
     print(datetime.datetime.now())
     print(f'||| Пользователь {message.from_user.full_name} нажал кнопку Помощь |||')

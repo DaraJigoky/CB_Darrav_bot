@@ -47,7 +47,7 @@ async def cmd_start(message: Message, state: FSMContext):
     
     await state.clear()
     await state.set_state(StartBot.lobby)
-    await message.answer('Добро пожаловать! Нажмите на кнопку "Войти" для входа в игру', reply_markup=mkb.menu_keyboard)
+    await message.answer('Добро пожаловать! Нажмите на кнопку "Войти" для входа в игру', reply_markup=mkb.menu_keyboard)    
     print('\ncmd_start')
     print(datetime.datetime.now())
     print(f'||| Пользователь {message.from_user.full_name} стартовал бота |||')
@@ -68,25 +68,13 @@ async def cmd_log(message: Message, state: FSMContext):
     Вход в меню управления персонажами и тд
 
     """
-    
+    prov = await get_account(message.from_user.id)
+    await state.update_data(log_acc_id=prov.id)
     await state.set_state(LoggedIn.inacc)
+    await state.set_state(LoggedIn.inacc)
+    data = await state.get_data()
+    await state.update_data(char_acc_id=data['log_acc_id'])
     await message.answer('Вы вошли в систему!', reply_markup=mkb.menu_login_keyboard)
-
-
-# Хэндлер доната
-@menu.message(StartBot.lobby, F.text == 'Донат')
-async def cmd_donat(message: Message, state: FSMContext):
-    await message.answer('Благодарим за Ваш вклад в развитие проекта!')
-    await message.answer('https://boosty.to/darada_okami/donate')
-    print('\ncmd_donate')
-    print(datetime.datetime.now())
-    print(f'||| Пользователь {message.from_user.full_name} нажал Донат |||')
-    print(f'||| Его tg_id: {message.from_user.id} |||')
-    with open('app/logs.txt', 'a') as file:
-        file.write('\n\ncmd_donate ')
-        file.write(str(datetime.datetime.now()))
-        file.write(f' ||| Пользователь {message.from_user.full_name} нажал Донат |||')
-        file.write(f' ||| Его tg_id: {message.from_user.id} |||')
 
 
 # Пока эта кнопка ничего не делает). Только пишет 'помощь'

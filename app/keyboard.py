@@ -21,6 +21,14 @@ menu_login_keyboard = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard=True,
     input_field_placeholder='Выберите пункт меню',
 )
+# Клавиатура залогиненного пользователя
+menu_login_keyboard1 = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text='Персонажи'), KeyboardButton(text='Помощь')],
+    [KeyboardButton(text='Выйти')]
+],
+    resize_keyboard=True,
+    input_field_placeholder='Выберите пункт меню',
+)
 
 
 # Клавиатура с кнопкой отмены, где это нужно
@@ -41,26 +49,18 @@ char_play = InlineKeyboardMarkup(inline_keyboard=[
 
 # Тестовая клавиатура в игре
 ingame_keyboard = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Персонаж'), KeyboardButton(text='Инвентарь')],
-    [KeyboardButton(text='Помощь'), KeyboardButton(text='Выйти из игры')]
+    [KeyboardButton(text='Персонаж'), KeyboardButton(text='Донат создателю')],
+    [KeyboardButton(text='Помощь'), KeyboardButton(text='Выйти')] 
 ],
     resize_keyboard=True,
     input_field_placeholder='Вы в игре',
 )
-# [InlineKeyboardButton(text='Инвентарь', callback_data='ingame_char_inventory')],
 
-# Клавиатура локации
-ingame_loc = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Перемещение', callback_data='ingame_loc_transport')],
-    [InlineKeyboardButton(text='Персонажи рядом', callback_data='ingame_loc_char_here')],
-])
-
-
-# Клавиатура локации с магазином
-ingame_loc_shop = InlineKeyboardMarkup(inline_keyboard=[
+# Клавиатура персонажа
+ingame_char = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Магазин', callback_data='ingame_loc_shop')],
+    [InlineKeyboardButton(text='Инвентарь', callback_data='ingame_char_inventory')],
 ])
-
 
 # Список персонажей на аккаунте
 async def char_list(account):
@@ -97,7 +97,7 @@ async def ingame_char_inventory(items):
 # Клавиатура ассортимента магазина
 async def ingame_shop_items(shop_id):
     try:
-        shop = await get_shop_items(shop_id)
+        shop = await get_item_by_id(shop_id)
         shop_items = shop.items
         items_id = [int(item) for item in (shop_items.split('_'))]
         keyboard = InlineKeyboardBuilder()
@@ -118,11 +118,6 @@ async def ingame_loc_shop_item_buy(item_id):
 
     return keyboard.adjust(1).as_markup()
 
-
-# Пока эта кнопка ничего не делает). Только пишет 'помощь'
-#@menu.message(StartBot.lobby, F.text == 'Помощь')
-#async def cmd_help_lobby(message: Message, state: FSMContext):
-    #await message.answer('Помощь')
 
 # Дописать как чатовую клавиатуру с реквестом из файла
 #async def cmd_help_lobby(message: Message, state: FSMContext):

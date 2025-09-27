@@ -6,12 +6,12 @@ from sqlalchemy.orm.query import Query
 
 # Реквест проверки аккаунта. Если существует, то да. Если нету, то добавляет запись в базу данных
 # Принимает tg id, логин и пароль аккаунта
-async def set_account(tg_id, login, password):
+async def set_account(tg_id):
     async with async_session() as session:
         account = await session.scalar(select(Account).where(Account.tg_id == tg_id))
 
         if not account:
-            session.add(Account(tg_id=tg_id, login=login, password=password))
+            session.add(Account(tg_id=tg_id))
             await session.commit()
 
 
@@ -27,7 +27,7 @@ async def get_all_characters_on_acc(acc):
 
         return await session.scalars(select(Character).where(Character.account == acc))
 
-# Создание инвенторя персонажа при создании или нет
+# Создание инвентаря персонажа при создании или нет
 async def set_inventory(char_id):
     async with async_session() as session:
         session.add(Inventory(id_char=char_id, money='1000'))
@@ -92,6 +92,7 @@ async def get_character_on_create(name):
     async with async_session() as session:
         return await session.scalar(select(Character).where(Character.name == name))
 
+
 # Получить персонажей на аккаунте
 async def get_characters(account):
     async with async_session() as session:
@@ -108,8 +109,3 @@ async def get_item_by_id(item_id):
     async with async_session() as session:
         return await session.scalar(select(Donat_shop).where(Donat_shop.id == item_id))
 
-
-# Получить ассортимент магазина по его id магазина
-async def get_shop_items(shop_id):
-    async with async_session() as session:
-        return await session.scalar(select(Donat_shop).where(Donat_shop.id == shop_id))

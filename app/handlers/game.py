@@ -1,3 +1,4 @@
+import datetime
 from aiogram import Router, F
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery, ContentType
 from aiogram.filters import Command, CommandStart, CommandObject
@@ -37,8 +38,8 @@ class InGame(StatesGroup):
 async def cmd_ingame_char(message: Message, state: FSMContext):
     data = await state.get_data()
     char = await get_character(data['game_char_id'])
-    await message.answer(f'{char.first_name} {char.last_name} id:{char.id}', reply_markup=mkb.ingame_char)
-    
+    await message.answer(f'{char.name} id:{char.id}', reply_markup=mkb.ingame_char)
+
 
 # Выводит инвентарь персонажа при нажатии кнопки Инвентарь
 @game.callback_query(InGame.ingame, F.data == 'ingame_char_inventory')
@@ -46,7 +47,8 @@ async def cmd_ingame_char_inventory(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     inventory = await get_inventory_by_char_id(data['game_char_id'])
     await callback.answer('')
-    await callback.message.answer(f'Ваш инвентарь:\nВаши деньги: {inventory.money}', reply_markup=await mkb.ingame_char_inventory(inventory.items))
+    await callback.message.answer(f'Ваш инвентарь:\nВаши деньги: {inventory.money}')
+
 
 
 # Выход в меню аккаунта
@@ -56,6 +58,22 @@ async def cmd_ingame_logout(message: Message, state: FSMContext):
     data = await state.get_data()
     await set_char_ingame_state(data['game_char_id'], char_state=0)
     await state.set_state(LoggedIn.inacc)
+
+
+# Хэндлер доната
+@game.message(InGame.ingame, F.text == 'Донат создателю')
+async def cmd_donat(message: Message, state: FSMContext):
+    await message.answer('Благодарим за Ваш вклад в развитие проекта!')
+    await message.answer('https://boosty.to/darada_okami/donate')
+    print('\ncmd_donate')
+    print(datetime.datetime.now())
+    print(f'||| Пользователь {message.from_user.full_name} нажал Донат |||')
+    print(f'||| Его tg_id: {message.from_user.id} |||')
+    with open('app/logs.txt', 'a') as file:
+        file.write('\n\ncmd_donate ')
+        file.write(str(datetime.datetime.now()))
+        file.write(f' ||| Пользователь {message.from_user.full_name} нажал Донат |||')
+        file.write(f' ||| Его tg_id: {message.from_user.id} |||')
 
 
 # Тестовый хэндлер магазина
@@ -68,7 +86,6 @@ async def cmd_ingame_loc_shop(callback: CallbackQuery, state: FSMContext):
 # Выводит прикол при нажатии кнопки Купить в магазине на предмете
 @game.callback_query(InGame.ingame, F.data.startswith('ingame_shop_item_buy_pressed_'))
 async def cmd_ingame_loc_shop_choose_buy(callback: CallbackQuery, state = FSMContext):
-    #item = await get_item_by_id(int(callback.data.split('_')[5]))
     data = await state.get_data()
     inventory = await get_inventory_by_char_id(data['game_char_id'])
     try: 

@@ -2,7 +2,7 @@ from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery, ContentTy
 
 class PreloadDicts:
     accounts = [
-        {'tg_id': '896282019', 'flag_admin': '1', 'flag_vld': '1'},
+        {'tg_id': '896282019', 'flag_admin': 1, 'flag_vld': 1},
     ]
    
     characters = [
@@ -10,11 +10,11 @@ class PreloadDicts:
     ]
 
     inventories = [
-        {'char_id': 1, 'id_char': 1, 'name_char': 'Dara', 'money': 1000},
+        {'char_id': 1, 'money': '1000'},
     ]
 
-    donat_shops = [
-        {'items': '100 darks', 'price': 100},
+    donat_shop = [
+        {'items': '100 darks', 'price': '100'},
     ]
     
 

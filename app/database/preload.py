@@ -1,5 +1,5 @@
 from app.database.models import async_session
-from app.database.models import Account, Character, Inventory
+from app.database.models import Account, Character, Inventory, Donat_shop
 from sqlalchemy import select, update, delete, desc
 
 from app.utils.utils import PreloadDicts # Импорт класса со списками словарей для прелоада
@@ -9,6 +9,8 @@ from app.utils.utils import PreloadDicts # Импорт класса со спи
 async def preloads():
     await set_default_accounts()
     await set_default_characters()
+    await set_default_inventories()
+    await set_default_items()
 
 # Автозагрузка наших акков с Дарой
 async def set_default_accounts():
@@ -17,7 +19,7 @@ async def set_default_accounts():
             exist = await session.scalar(select(Account).where(Account.tg_id == account['tg_id']))
 
             if not exist:
-                session.add(Account(tg_id=account['tg_id'], login=account['flag_admin'], password=account['flag_vld']))
+                session.add(Account(tg_id=account['tg_id'], flag_admin=account['flag_admin'], flag_vld=account['flag_vld']))
                 await session.commit()
                 
 
@@ -29,5 +31,28 @@ async def set_default_characters():
 
             if not exist:
                 session.add(Character(account=character['account'], inventory=character['inventory'], name=character['name'], game_state=character['game_state']))
+                await session.commit()
+
+
+
+# Автозагрузка инвентарей 
+async def set_default_inventories():
+    async with async_session() as session:
+        for inventory in PreloadDicts.inventories:
+            exist = await session.scalar(select(Inventory).where(Inventory.id_char == inventory['char_id']))
+
+            if not exist:
+                session.add(Inventory(id_char=inventory['char_id'], money=inventory['money']))
+                await session.commit()
+
+
+# Автозагрузка предметов
+async def set_default_items():
+    async with async_session() as session:
+        for donat_shop in PreloadDicts.donat_shop:
+            exist = await session.scalar(select(Donat_shop).where(Donat_shop.items == donat_shop['items']))
+
+            if not exist:
+                session.add(Donat_shop(items=donat_shop['items'], price=donat_shop['price']))
                 await session.commit()
 
