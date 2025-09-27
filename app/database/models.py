@@ -42,7 +42,7 @@ class Inventory(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     id_char: Mapped[int] = mapped_column(ForeignKey('characters.id'), nullable=False)
     name_char: Mapped[str] = mapped_column(ForeignKey('characters.name'), nullable=False)
-    money: Mapped[int] = mapped_column(String(10), default='0')
+    money: Mapped[int] = mapped_column()
 
 
 # Модель магазина доната
