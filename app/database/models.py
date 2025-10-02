@@ -19,9 +19,9 @@ class Account(Base):
     __tablename__ = 'accounts'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    tg_id = mapped_column(BigInteger)
-    flag_admin: Mapped[int] = mapped_column(nullable=False)
-    flag_vld: Mapped[int] = mapped_column(nullable=False)
+    tg_id = mapped_column(BigInteger, unique=True, index=True, nullable=False)
+    flag_admin: Mapped[int] = mapped_column(nullable=False, default=0)
+    flag_vld: Mapped[int] = mapped_column(nullable=False, default=0)
 
 
 # Прототип таблицы персонажей
@@ -30,19 +30,10 @@ class Character(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     account: Mapped[int] = mapped_column(ForeignKey('accounts.id'))
-    inventory: Mapped[int] = mapped_column(ForeignKey('inventories.id'), nullable=True)
-    name: Mapped[str] = mapped_column(String(80))    
+    money: Mapped[str] = mapped_column(String(100), default='0')
+    name: Mapped[str] = mapped_column(String(80))
+    items: Mapped[str] = mapped_column(ForeignKey('donat_shop.items'), nullable=True)
     game_state: Mapped[int] = mapped_column()
-    
-
-# Модель инвентаря
-class Inventory(Base):
-    __tablename__ = 'inventories'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    id_char: Mapped[int] = mapped_column(ForeignKey('characters.id'), nullable=False)    
-    money: Mapped[str] = mapped_column(String(10), default='0')
-
 
 # Модель магазина доната
 class Donat_shop(Base):

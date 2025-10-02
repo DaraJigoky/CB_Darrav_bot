@@ -1,7 +1,7 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardButton, InlineKeyboardMarkup,)
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-from app.database.requests import get_characters, get_item_by_id, get_shop_items
+from app.database.requests import get_characters, get_item_by_id
 
 
 # Клавиатура главного меню на старте
@@ -49,15 +49,15 @@ char_play = InlineKeyboardMarkup(inline_keyboard=[
 
 # Тестовая клавиатура в игре
 ingame_keyboard = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Персонаж'), KeyboardButton(text='Донат создателю')],
+    [KeyboardButton(text='Банк'), KeyboardButton(text='Донат создателю')],
     [KeyboardButton(text='Помощь'), KeyboardButton(text='Выйти')] 
 ],
     resize_keyboard=True,
     input_field_placeholder='Вы в игре',
 )
 
-# Клавиатура персонажа
-ingame_char = InlineKeyboardMarkup(inline_keyboard=[
+# Клавиатура Банк
+ingame_bank = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Магазин', callback_data='ingame_loc_shop')],
     [InlineKeyboardButton(text='Инвентарь', callback_data='ingame_char_inventory')],
 ])
@@ -104,7 +104,7 @@ async def ingame_shop_items(shop_id):
 
         for item_id in items_id:
             btn = await get_item_by_id(item_id)
-            keyboard.add(InlineKeyboardButton(text=f'{btn.name}', callback_data=f'ingame_shop_keyboard_item_{btn.id}'))
+            keyboard.add(InlineKeyboardButton(text=f'{btn.items}', callback_data=f'ingame_shop_keyboard_item_{btn.id}'))
     
         return keyboard.adjust(1).as_markup()
     except:

@@ -34,11 +34,11 @@ class InGame(StatesGroup):
 
 
 # Возвращает в консоль ID игрока
-@game.message(InGame.ingame, F.text == 'Персонаж')
+@game.message(InGame.ingame, F.text == 'Банк')
 async def cmd_ingame_char(message: Message, state: FSMContext):
     data = await state.get_data()
     char = await get_character(data['game_char_id'])
-    await message.answer(f'{char.name} id:{char.id}', reply_markup=mkb.ingame_char)
+    await message.answer(f'{char.name} id:{char.id}', reply_markup=mkb.ingame_bank)
 
 
 # Выводит инвентарь персонажа при нажатии кнопки Инвентарь
@@ -47,17 +47,38 @@ async def cmd_ingame_char_inventory(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     inventory = await get_inventory_by_char_id(data['game_char_id'])
     await callback.answer('')
-    await callback.message.answer(f'Ваш инвентарь:\nВаши деньги: {inventory.money}')
-
+    await callback.message.answer(f'Ваши деньги: {inventory.money}\nВаш инвентарь:')
 
 
 # Выход в меню аккаунта
-@game.message(InGame.ingame, F.text == 'Выйти из игры')
+@game.message(InGame.ingame, F.text == 'Выйти')
 async def cmd_ingame_logout(message: Message, state: FSMContext):
     await message.answer('Вы вышли из игры', reply_markup=mkb.menu_login_keyboard)
     data = await state.get_data()
     await set_char_ingame_state(data['game_char_id'], char_state=0)
     await state.set_state(LoggedIn.inacc)
+
+
+# Выход в меню аккаунта
+@game.message(InGame.ingame, F.text == 'Помощь')
+async def cmd_help_game(message: Message, state: FSMContext):
+    await message.answer('Помощи нет, Бог не поможет.')
+    await message.answer('Пока что пишите: https://t.me/DarJigoky')
+    print('\ncmd_help_game')
+    print(datetime.datetime.now())
+    print(f'||| Пользователь {message.from_user.full_name} нажал Помощь |||')
+    print(f'||| Его tg_id: {message.from_user.id} |||')
+
+
+@game.message(InGame.ingame, F.text == 'Баланс')
+async def cmd_ingame_char_balance(message: Message, state: FSMContext):
+    data = await state.get_data()
+    inventory = await get_inventory_by_char_id(data['game_char_id'])
+    await message.answer(f'Ваш инвентарь:\nВаши деньги: {inventory.money} даркенс(ов)')
+    print('\ncmd_ingame_char_balance')
+    print(datetime.datetime.now())
+    print(f'||| Пользователь {message.from_user.full_name} написал Баланс|||')
+    print(f'||| Его tg_id: {message.from_user.id} |||')
 
 
 # Хэндлер доната
@@ -69,11 +90,6 @@ async def cmd_donat(message: Message, state: FSMContext):
     print(datetime.datetime.now())
     print(f'||| Пользователь {message.from_user.full_name} нажал Донат |||')
     print(f'||| Его tg_id: {message.from_user.id} |||')
-    with open('app/logs.txt', 'a') as file:
-        file.write('\n\ncmd_donate ')
-        file.write(str(datetime.datetime.now()))
-        file.write(f' ||| Пользователь {message.from_user.full_name} нажал Донат |||')
-        file.write(f' ||| Его tg_id: {message.from_user.id} |||')
 
 
 # Тестовый хэндлер магазина

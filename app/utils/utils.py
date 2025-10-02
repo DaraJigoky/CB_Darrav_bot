@@ -6,11 +6,7 @@ class PreloadDicts:
     ]
    
     characters = [
-        {'account': 1, 'inventory': 1, 'name': 'Dara', 'game_state': 0},
-    ]
-
-    inventories = [
-        {'char_id': 1, 'money': '1000'},
+        {'account': 1, 'money': '1000', 'name': 'Dara', 'items': None, 'game_state': 0},
     ]
 
     donat_shop = [
@@ -64,38 +60,6 @@ def get_lines_in_category(file_path: str, line_to_find: str) -> list[str]:
     index = find_line_index(file_path, line_to_find)
     output_lines = find_lines_of_category(file_path, index)
     return output_lines
-
-
-# Сам тестовый стенд. Вписываем нужное название категории из файла и получаем его содержимое
-line_to_find = '# Список имён'
-file_path = 'app/utils/test_text.txt'
-output_lines = get_lines_in_category(file_path, line_to_find)
-print(output_lines)
-
-
-# Пример рабочего текстовика откуда мы достанем содержимое категории
-# Кавычки не пишем
-"""
-# Список имён
-
-Вася
-Петя
-Жопик
-
-# Список локаций
-
-Гора
-Землянка
-Пещера
-
-# Список оружий
-
-Лук
-Меч
-Шит
-"""
-# Кавычки не пишем
-
 
 def censor_check(text: str, censor: list[str]):
     words = text.split()

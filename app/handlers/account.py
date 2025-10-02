@@ -5,7 +5,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from app.database.requests import (get_account, get_account_by_id, set_character, get_character, set_char_ingame_state, get_all_characters_on_acc, 
-                                   set_inventory, get_character_on_create, set_inventory_to_new_player, delete_char_by_id, delete_char_inv_by_id)
+                                  get_characters, get_character_on_create, delete_char_by_id, delete_char_inv_by_id)
 
 import app.keyboard as mkb
 
@@ -123,7 +123,7 @@ async def character_list_delete(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     char = await get_character(data['char_char_id'])
     await delete_char_by_id(char.id)
-    await delete_char_inv_by_id(char.inventory)
+    await delete_char_inv_by_id(char.money)
     acc = await get_account_by_id(data['char_acc_id'])
     await callback.answer('')
     await callback.message.answer('Персонаж удален! Ваши персонажи:', reply_markup=await mkb.char_list(acc.id))
@@ -136,13 +136,22 @@ async def character_list_delete(callback: CallbackQuery, state: FSMContext):
 # Кнопка вызывает цепочку создания персонажа
 @account.message(LoggedIn.inacc, F.text == 'Создать персонажа')
 async def cmd_loggedin_create_char(message: Message, state: FSMContext):
+    count = 0
     data = await state.get_data()
-    await state.set_state(LoggedIn.char_name)
-    await message.answer('Введите имя вашего персонажа:')
-    print('\ncmd_loggedin_create_char')
-    print(datetime.datetime.now())
-    print(f'||| Пользователь {message.from_user.full_name} нажал кнопку Создать персонажа |||')
-    print(f'||| Его acc_id: {data['char_acc_id']} |||')
+    characters = await get_characters(data['char_acc_id'])    
+    for character in characters:
+        count += 1
+    if count < 1:        
+        await state.set_state(LoggedIn.char_name)
+        await message.answer('Введите имя вашего персонажа:')
+        print('\ncmd_loggedin_create_char')
+        print(datetime.datetime.now())
+        print(f'||| Пользователь {message.from_user.full_name} нажал кнопку Создать персонажа |||')
+        print(f'||| Его acc_id: {data['char_acc_id']} |||')
+    if count >= 1:
+        await message.answer('Максимальное количество персонажей - 1!', reply_markup=mkb.menu_login_keyboard)
+        
+
 
 
 # Ловит имя персонажа при создании
@@ -169,8 +178,6 @@ async def cmd_loggedin_char_create(message: Message, state: FSMContext):
     account = await get_account(message.from_user.id)
     await set_character(account.id, data['char_name'])
     new = await get_character_on_create(data['char_name'])
-    await set_inventory(new.id)
-    await set_inventory_to_new_player(new.id)
     await message.answer('Создание персонажа завершено!', reply_markup=mkb.menu_login_keyboard)
     await state.set_state(LoggedIn.inacc)
     print('\ncmd_loggedin_char_create')
