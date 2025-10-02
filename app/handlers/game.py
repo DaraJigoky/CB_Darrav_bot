@@ -47,7 +47,7 @@ async def cmd_ingame_char_inventory(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     inventory = await get_inventory_by_char_id(data['game_char_id'])
     await callback.answer('')
-    await callback.message.answer(f'Ваши деньги: {inventory.money}\nВаш инвентарь:')
+    await callback.message.answer(f'Ваши деньги: {inventory.money} даркс(ов)\nВаш инвентарь:')
 
 
 # Выход в меню аккаунта
@@ -74,7 +74,7 @@ async def cmd_help_game(message: Message, state: FSMContext):
 async def cmd_ingame_char_balance(message: Message, state: FSMContext):
     data = await state.get_data()
     inventory = await get_inventory_by_char_id(data['game_char_id'])
-    await message.answer(f'Ваш инвентарь:\nВаши деньги: {inventory.money} даркенс(ов)')
+    await message.answer(f'Ваш инвентарь:\nВаши деньги: {inventory.money} даркс(ов)')
     print('\ncmd_ingame_char_balance')
     print(datetime.datetime.now())
     print(f'||| Пользователь {message.from_user.full_name} написал Баланс|||')
